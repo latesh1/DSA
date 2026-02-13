@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node {
+    int val;
+    Node* next;
+    Node(int x) : val(x), next(NULL) {}
+};
+
+// Function to count length of the loop
+int findlength(Node* slow, Node* fast) {
+    int cnt = 1;
+    fast = fast->next;
+    while (slow != fast) {
+        cnt++;
+        fast = fast->next;
+    }
+    return cnt;
+}
+
+// Function to return length of loop if present, otherwise 0
+int lengthofloop(Node* head) {
+    Node* slow = head;
+    Node* fast = head;
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast) {
+            return findlength(slow, fast);
+        }
+    }
+    return 0; // no loop
+}
+
+// Helper function to create linked list with optional cycle
+Node* createCycleList(vector<int> vals, int pos) {
+    if (vals.empty()) return NULL;
+
+    Node* head = new Node(vals[0]);
+    Node* curr = head;
+    Node* cycleNode = NULL;
+
+    for (int i = 1; i < vals.size(); i++) {
+        curr->next = new Node(vals[i]);
+        curr = curr->next;
+        if (i == pos) cycleNode = curr;
+    }
+
+    if (pos == 0) cycleNode = head;
+    if (cycleNode != NULL) {
+        curr->next = cycleNode; // create cycle
+    }
+
+    return head;
+}
+
+int main() {
+    // Testcase 1: list with a cycle
+    vector<int> vals1 = {1, 2, 3, 4, 5};
+    int pos1 = 2; // cycle starts at node with value 3
+    Node* head1 = createCycleList(vals1, pos1);
+    cout << "Length of loop (Testcase 1): " << lengthofloop(head1) << endl;
+
+    // Testcase 2: list without a cycle
+    vector<int> vals2 = {10, 20, 30, 40};
+    int pos2 = -1; // no cycle
+    Node* head2 = createCycleList(vals2, pos2);
+    cout << "Length of loop (Testcase 2): " << lengthofloop(head2) << endl;
+
+    // Testcase 3: single node with cycle
+    vector<int> vals3 = {99};
+    int pos3 = 0; // cycle at itself
+    Node* head3 = createCycleList(vals3, pos3);
+    cout << "Length of loo
